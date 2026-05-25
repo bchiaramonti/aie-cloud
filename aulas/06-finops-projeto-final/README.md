@@ -43,10 +43,11 @@ A entrega final consolida tudo o que foi construído nas Aulas 1-5 em **um únic
 
 ## Material da aula
 
-> Em construção — disponível antes da aula.
+| Arquivo | Quando usar |
+|---------|-------------|
+| [lab/guia-lab.md](lab/guia-lab.md) | Durante a aula — 2 atividades de FinOps (Cost Management + Pricing Calculator) + checklist do trabalho assistido em grupo |
 
-- `lab/` — FinOps prático: Cost Management + Pricing Calculator aplicado à arquitetura QC
-- `exercicios/` — Otimização de uma arquitetura dada (sem entrega ZIP separada — esta aula não tem entrega intermediária; a Aula 6 alimenta o projeto integrado final)
+> **Não há `exercicios.md` separado.** A "entrega" desta aula é o **projeto integrado final** ([entregas/projeto-final/](../../entregas/projeto-final/)), entregue como ZIP **1 semana após a Aula 6**. O lab desta aula alimenta diretamente a seção `finops/` do ZIP final.
 
 ---
 
