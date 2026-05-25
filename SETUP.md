@@ -45,11 +45,9 @@ Escolha **Bash** quando perguntado (vamos usar Bash em todos os labs).
 Dentro do Cloud Shell, rode:
 
 ```bash
-git clone https://github.com/<usuario>/aie-cloud.git
+git clone https://github.com/elthonf/aie-cloud.git
 cd aie-cloud
 ```
-
-> O link exato do clone está no topo do repositório no GitHub, botão verde **Code**.
 
 Para abrir um arquivo no editor integrado:
 
