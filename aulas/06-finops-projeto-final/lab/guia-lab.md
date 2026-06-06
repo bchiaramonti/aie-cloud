@@ -117,7 +117,7 @@ Você é arquiteto cloud apresentando à diretoria da QC. Estime o TCO mensal co
 ### Passo 1 — Adicionar cada serviço
 
 1. Em https://azure.microsoft.com/pricing/calculator, **adicione um por um** todos os 9 itens acima
-2. Configure **Brazil South** como região para tudo (LGPD — dados de brasileiros)
+2. Configure **East US 2** como região para tudo (padrão da disciplina)
 3. Preencha os volumes da tabela
 
 ### Passo 2 — Calcular o total
@@ -237,7 +237,7 @@ Use este checklist como guia para garantir que o ZIP final está completo:
 | Problema | Solução |
 |----------|---------|
 | Cost Management vazio | Conta nova ou sem gasto — OK, foque no L₂ que é com cenário hipotético |
-| Pricing Calculator não tem Brazil South para algum serviço | Tentar East US 2 como alternativa; mencionar isso na análise FinOps |
+| Pricing Calculator não tem East US 2 para algum serviço | Usar outra região permitida (ex.: East US, West US 2) e mencionar isso na análise FinOps |
 | Estimativa total muito alta (>$5k/mês) | Revisar volumes — provavelmente Speech ou ML Endpoint dispararam |
 | Estimativa total muito baixa (<$200/mês) | Revisar volumes — provavelmente esqueceu de mudar de free tier para escala |
 | Não sei como consolidar 5 Terraforms em 1 | Pedir ajuda ao professor durante o trabalho de grupo — pode demorar 15-20 min juntos |
