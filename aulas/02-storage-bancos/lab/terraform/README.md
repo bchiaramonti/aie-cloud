@@ -3,7 +3,7 @@
 Código IaC pronto para provisionar **toda a camada de dados** da Quantum Commerce:
 
 - Storage Account + 3 containers (catálogo, imagens, logs) + lifecycle policy
-- Azure SQL Database (Free Offer, auto-pause)
+- Azure SQL Database (GP Serverless, auto-pause)
 - Key Vault com a connection string do SQL como segredo
 - Cosmos DB (Free Tier)
 - Azure AI Search (SKU Free)
@@ -41,7 +41,7 @@ terraform destroy -auto-approve -var="sql_admin_password=$SQL_PASSWORD"
 | [variables.tf](variables.tf) | `location` e `sql_admin_password` |
 | [outputs.tf](outputs.tf) | Nomes e endpoints consumidos pelos scripts Python |
 | [storage.tf](storage.tf) | Storage Account + 3 containers + lifecycle |
-| [sql.tf](sql.tf) | SQL Server + Database (Free Offer) + firewall rules |
+| [sql.tf](sql.tf) | SQL Server + Database (GP Serverless, auto-pause) + firewall rules |
 | [keyvault.tf](keyvault.tf) | Key Vault + RBAC + segredo da connection string |
 | [cosmos.tf](cosmos.tf) | Cosmos DB Account (Free Tier) + DB + container `reviews` |
 | [search.tf](search.tf) | AI Search service (SKU Free) + 2 role assignments |

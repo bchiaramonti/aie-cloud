@@ -140,7 +140,7 @@ az storage blob list \
 
 ---
 
-## Atividade 2 — Azure SQL Free Offer + Key Vault + Python
+## Atividade 2 — Azure SQL Serverless + Key Vault + Python
 
 **Objetivo:** Popular a tabela `T_PRODUTOS` no Azure SQL **lendo a connection string do Key Vault** (sem hardcoded) e os dados do **CSV no Blob**.
 
@@ -148,7 +148,7 @@ az storage blob list \
 
 Abra [sql.tf](terraform/sql.tf) e [keyvault.tf](terraform/keyvault.tf). Observe:
 
-- **`azurerm_mssql_database.qc`** — banco SQL no **Free Offer** (`use_free_limit = true`): 100k vCore-seconds/mês + 32GB grátis, com auto-pause após 60 min de inatividade.
+- **`azurerm_mssql_database.qc`** — banco SQL **General Purpose Serverless** (`GP_S_Gen5_2`) com **auto-pause** após 60 min de inatividade: pausado, paga-se só o storage (centavos), e com o destroy ao final o custo é desprezível. *(A "oferta gratuita" do Azure SQL ainda não tem suporte no provider azurerm liberado — [PR #32055](https://github.com/hashicorp/terraform-provider-azurerm/pull/32055) — por isso usamos serverless com auto-pause.)*
 - **`azurerm_mssql_firewall_rule.cloud_shell`** — libera o IP do Cloud Shell automaticamente (usando o data source `http.meu_ip`).
 - **`azurerm_key_vault.qc`** — Vault com **RBAC habilitado** (sem usar Access Policies legadas).
 - **`azurerm_key_vault_secret.sql_connection`** — a connection string completa, armazenada como segredo.

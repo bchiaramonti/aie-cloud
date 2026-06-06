@@ -30,16 +30,17 @@ resource "azurerm_mssql_firewall_rule" "cloud_shell" {
   end_ip_address   = chomp(data.http.meu_ip.response_body)
 }
 
-# Azure SQL Database FREE OFFER
-# 100k vCore-seconds/mês + 32GB grátis. Auto-pausa quando inativo.
+# Azure SQL Database — General Purpose Serverless (GP_S_Gen5_2)
+# Auto-pausa após 60 min de inatividade: quando pausado, paga-se só o storage
+# (centavos). Com o destroy ao final do lab, o custo é desprezível.
+# Obs.: a "oferta gratuita" do Azure SQL (use_free_limit) ainda não tem suporte
+# no provider azurerm liberado (PR #32055 aberta), por isso não é usada aqui.
 resource "azurerm_mssql_database" "qc" {
-  name                           = "sqldb-qc"
-  server_id                      = azurerm_mssql_server.qc.id
-  sku_name                       = "GP_S_Gen5_2"
-  free_limit_exhaustion_behavior = "AutoPause"
-  use_free_limit                 = true
-  auto_pause_delay_in_minutes    = 60
-  min_capacity                   = 0.5
-  max_size_gb                    = 32
-  tags                           = local.tags
+  name                        = "sqldb-qc"
+  server_id                   = azurerm_mssql_server.qc.id
+  sku_name                    = "GP_S_Gen5_2"
+  auto_pause_delay_in_minutes = 60
+  min_capacity                = 0.5
+  max_size_gb                 = 32
+  tags                        = local.tags
 }

@@ -1,10 +1,8 @@
 terraform {
   required_providers {
     azurerm = {
-      source = "hashicorp/azurerm"
-      # >= 3.107 é obrigatório: use_free_limit / free_limit_exhaustion_behavior
-      # (oferta gratuita do Azure SQL Database) foram adicionados nessa versão
-      version = ">= 3.107, < 4.0"
+      source  = "hashicorp/azurerm"
+      version = "~> 3.100"
     }
     random = {
       source  = "hashicorp/random"

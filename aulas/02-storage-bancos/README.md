@@ -7,7 +7,7 @@ Ao final desta aula, você será capaz de:
 - Distinguir os 3 tipos de storage em cloud (Object, File, Block) e escolher o adequado para cada caso de uso.
 - Provisionar e configurar um Azure Storage Account via Terraform com containers, tiers e lifecycle policies.
 - Diferenciar bancos de dados relacionais (SQL) e NoSQL (documentos), entendendo quando usar cada um.
-- Provisionar um **Azure SQL Database Serverless (Free Offer)** via Terraform e popular tabelas via Python.
+- Provisionar um **Azure SQL Database Serverless (auto-pause)** via Terraform e popular tabelas via Python.
 - Aplicar **Azure Key Vault** para eliminar segredos hardcoded (connection strings, API keys).
 - Provisionar **Cosmos DB Free Tier** e popular documentos via Python.
 - Criar um índice no **Azure AI Search** e fazer busca semântica — base para o RAG dos agentes da QC.
