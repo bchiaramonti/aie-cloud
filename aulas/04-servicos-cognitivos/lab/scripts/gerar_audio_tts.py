@@ -8,7 +8,7 @@ Services do lab — tanto TTS quanto STT moram nele.
 Variáveis de ambiente necessárias:
     AI_ENDPOINT      — endpoint do Azure AI Services
     KEY_VAULT_NAME   — nome do Key Vault (com o segredo ai-services-key)
-    AI_REGION        — região (default: brazilsouth)
+    AI_REGION        — região (default: eastus2)
 
 Saída: ~/qc-aula04/audio-teste.wav
 
@@ -34,7 +34,7 @@ SAIDA = os.path.expanduser("~/qc-aula04/audio-teste.wav")
 
 def main():
     kv_name = os.environ["KEY_VAULT_NAME"]
-    region  = os.environ.get("AI_REGION", "brazilsouth")
+    region  = os.environ.get("AI_REGION", "eastus2")
 
     # 1. Ler chave do AI Services do Key Vault (usando MI do Cloud Shell)
     cred = DefaultAzureCredential()

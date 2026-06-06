@@ -116,7 +116,7 @@ Um Resource Group é um contêiner lógico no Azure — pense numa "pasta de pro
 |-------|-------|
 | Assinatura | Azure for Students |
 | Nome | `rg-lab-aula01` |
-| Região | **Brazil South** (fallback: East US) |
+| Região | **East US 2** (`eastus2`) |
 
 3. Antes de clicar em "Revisar + criar", vá para a aba **"Tags"** e adicione:
    - Tag: `aula` = `1`
@@ -152,7 +152,7 @@ Uma startup de e-commerce precisa hospedar seu backend:
 
 1. Abra **https://azure.microsoft.com/pricing/calculator** em outra aba
 2. Em **"Compute"**, clique em **"Virtual Machines"** → **"Adicionar ao cálculo"**
-   - Região: Brazil South
+   - Região: East US 2
    - SO: Linux
    - Tipo: **B1s** (1 vCPU, 1 GB RAM)
    - Horas/mês: 730 (24h × ~30,4 dias)

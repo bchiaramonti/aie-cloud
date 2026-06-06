@@ -38,7 +38,7 @@ Tempo: ~5 min (Workspace é o mais lento para destruir).
 | Arquivo | O que define |
 |---------|--------------|
 | [main.tf](main.tf) | Providers, RG, locals, Storage, App Insights, Key Vault, Workspace, Compute Cluster |
-| [variables.tf](variables.tf) | `location` (default `brazilsouth`) |
+| [variables.tf](variables.tf) | `location` (default `eastus2`) |
 | [outputs.tf](outputs.tf) | `subscription_id`, `workspace_name`, `resource_group_name`, `storage_account_name`, `compute_cluster_name` |
 
 ## Outputs (usados pelos scripts e jobs)

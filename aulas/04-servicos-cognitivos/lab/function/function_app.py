@@ -39,7 +39,7 @@ app = func.FunctionApp(http_auth_level=func.AuthLevel.ANONYMOUS)
 AI_ENDPOINT   = os.environ["AI_ENDPOINT"]
 STORAGE_AULA2 = os.environ["STORAGE_ACCOUNT_AULA2"]
 COSMOS_AULA2  = os.environ.get("COSMOS_ACCOUNT_AULA2")
-AI_REGION     = os.environ.get("AI_REGION", "brazilsouth")
+AI_REGION     = os.environ.get("AI_REGION", "eastus2")
 
 _credential = DefaultAzureCredential()
 _blob_service = BlobServiceClient(

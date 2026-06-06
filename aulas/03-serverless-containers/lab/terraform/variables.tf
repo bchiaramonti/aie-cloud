@@ -1,7 +1,9 @@
 variable "location" {
+  # Padrão da disciplina: eastus2. Brazil South costuma ser bloqueado pela
+  # política "best available regions" das contas Azure for Students.
   description = "Região do Azure onde os recursos serão provisionados"
   type        = string
-  default     = "brazilsouth"
+  default     = "eastus2"
 }
 
 variable "storage_account_aula2" {
