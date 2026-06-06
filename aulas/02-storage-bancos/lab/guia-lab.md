@@ -360,6 +360,7 @@ Esses recursos serão consumidos por:
 
 | Problema | Causa | Solução |
 |----------|-------|---------|
+| `RequestDisallowedByAzure` / "best available regions" no apply | A política da conta Azure for Students bloqueia a região (ex.: `brazilsouth`) para esses recursos | Rode com uma região permitida: `terraform apply -var="location=eastus2"`. Para descobrir as permitidas, abra no portal a criação de um Storage Account e veja as regiões do dropdown |
 | Terraform: "free_tier_enabled cannot be set to true" no Cosmos | Você já tem outra conta Cosmos com Free Tier nesta subscription | Trocar para `free_tier_enabled = false` (custo mínimo) ou destruir a outra conta |
 | AI Search: limite de SKU Free atingido | 1 search service Free por subscription | Destruir o existente em outra subscription, ou usar SKU `basic` (~$60/mês — evite) |
 | Python: "Login failed for user 'sqladminqc'" | Senha do shell tinha `$` ou aspas — interpretado errado | Use `openssl rand -base64 24` (não contém caracteres problemáticos) ou guarde em variável escapada |

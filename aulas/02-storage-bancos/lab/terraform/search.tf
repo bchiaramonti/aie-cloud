@@ -5,7 +5,8 @@ resource "azurerm_search_service" "qc" {
   resource_group_name = azurerm_resource_group.rg.name
   location            = azurerm_resource_group.rg.location
   sku                 = "free"
-  semantic_search_sku = "free"
+  # semantic_search só pode ser ativado em SKUs pagos (basic+); no SKU free
+  # o argumento não é aceito. Omitido de propósito para manter custo zero.
 
   identity {
     type = "SystemAssigned"
