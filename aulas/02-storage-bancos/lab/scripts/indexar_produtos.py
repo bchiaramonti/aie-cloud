@@ -14,6 +14,7 @@ Dependências:
 
 import csv
 import os
+import time
 
 from azure.identity import DefaultAzureCredential
 from azure.search.documents import SearchClient
@@ -125,6 +126,10 @@ def main():
     )
     result = search_client.upload_documents(documents=documentos)
     print(f"✓ {len(result)} documentos indexados")
+
+    # Indexação é assíncrona — aguarda alguns segundos para os documentos
+    # ficarem pesquisáveis antes de demonstrar as buscas.
+    time.sleep(3)
 
     # 3. Demonstrar buscas
     print("\n=== Busca por keyword: 'cadeira escritório' ===")

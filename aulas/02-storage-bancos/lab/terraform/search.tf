@@ -5,8 +5,18 @@ resource "azurerm_search_service" "qc" {
   resource_group_name = azurerm_resource_group.rg.name
   location            = azurerm_resource_group.rg.location
   sku                 = "free"
-  # semantic_search só pode ser ativado em SKUs pagos (basic+); no SKU free
-  # o argumento não é aceito. Omitido de propósito para manter custo zero.
+  # NÃO definimos semantic_search_sku aqui: o provider azurerm 3.x recusa esse
+  # argumento quando sku="free" ("can only be specified when sku is not free"),
+  # apesar de o SKU free SUPORTAR o semantic ranker (plano "free", 1000 q/mês).
+  # Por isso o semantic é habilitado via `az` após o apply (ver guia, Parte B) —
+  # mesmo padrão do data-plane do Cosmos.
+
+  # Habilita autenticação AAD/RBAC no DATA-PLANE (criar índice, indexar, consultar).
+  # Sem isso, o serviço aceita só API key e o DefaultAzureCredential dos scripts
+  # Python recebe 403 Forbidden — mesmo com as role assignments abaixo.
+  # local_auth = true mantém também a API key (modo "Both"), útil no portal.
+  local_authentication_enabled = true
+  authentication_failure_mode  = "http403"
 
   identity {
     type = "SystemAssigned"
