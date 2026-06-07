@@ -213,27 +213,20 @@ Abra [cosmos.tf](terraform/cosmos.tf):
 
 > **Por que não Free Tier?** O Free Tier do Cosmos só beneficia *provisioned throughput* (não serverless) e o Azure permite **apenas 1 conta free-tier por assinatura** — o que trava o `apply` se já houver outra. Por isso o lab usa serverless sem free-tier (`var.cosmos_free_tier = false`). Para ligar mesmo assim: `terraform apply -var="cosmos_free_tier=true"`.
 
-#### Passo 2 — Conceder permissão de Data Plane no Cosmos
+#### Passo 2 — Permissão de Data Plane do Cosmos (já provisionada via Terraform)
 
-O Cosmos exige role específica para indexar/consultar via Python:
+O Cosmos exige uma role específica (Built-in Data Contributor) para ler/gravar documentos via Python com `DefaultAzureCredential`. **Isso já foi concedido pelo Terraform** — veja em [cosmos.tf](terraform/cosmos.tf) o recurso `azurerm_cosmosdb_sql_role_assignment.qc_data`, que atribui a role ao usuário que rodou o `apply`.
 
 ```bash
+# Conferir que a role data-plane existe (opcional)
 COSMOS_NAME=$(cd ~/aie-cloud/aulas/02-storage-bancos/lab/terraform && terraform output -raw cosmos_account_name)
 RG=$(cd ~/aie-cloud/aulas/02-storage-bancos/lab/terraform && terraform output -raw resource_group_name)
-MY_ID=$(az ad signed-in-user show --query id -o tsv)
-
-az cosmosdb sql role assignment create \
-  --account-name "$COSMOS_NAME" \
-  --resource-group "$RG" \
-  --scope "/" \
-  --principal-id "$MY_ID" \
-  --role-definition-id 00000000-0000-0000-0000-000000000002
-
-# Aguardar propagação
-sleep 30
+az cosmosdb sql role assignment list --account-name "$COSMOS_NAME" --resource-group "$RG" -o table
 ```
 
-> **Por que via `az` e não Terraform?** A role data plane do Cosmos hoje é melhor concedida via CLI. Em produção, a Function/Agente que acessa o Cosmos teria sua **Managed Identity** com essa role.
+> **Antes era um passo manual via `az`.** Movido para o Terraform porque a role é parte da infraestrutura (IaC determinístico, sem race de propagação). Em produção, a Function/Agente que acessa o Cosmos teria sua **Managed Identity** com essa mesma role — o padrão não muda, só a identidade.
+>
+> Se mesmo assim der `Forbidden`, a role pode ainda estar propagando — aguarde ~1 min e rode de novo.
 
 #### Passo 3 — Rodar o script de reviews
 
@@ -265,23 +258,11 @@ Abra [search.tf](terraform/search.tf):
 
 - **`azurerm_search_service.qc`** — Search service SKU **free** (3 índices, 50 MB), com **autenticação AAD/RBAC habilitada no data-plane** (`authentication_failure_mode`). Sem isso, o `DefaultAzureCredential` dos scripts levaria **403 Forbidden** mesmo com as roles.
 - **2 role assignments**: `Search Service Contributor` (gerencia índices) e `Search Index Data Contributor` (indexa/consulta documentos).
+- **`azapi_update_resource.search_semantic`** — habilita o **semantic ranker** (plano free, 1000 queries/mês). É feito via `azapi` porque o provider azurerm 3.x recusa esse ajuste quando o SKU é `free`, embora o Azure suporte. Sem ele, a busca semântica falharia com `Semantic search is not enabled for this service`.
 
 > **Atenção:** AI Search Free também é **1 por subscription**. Mesma lógica do Cosmos.
 
-#### Passo 2 — Habilitar o semantic ranker (via `az`)
-
-O SKU free **suporta** o semantic ranker (plano free, 1000 queries/mês), mas o provider azurerm 3.x não permite ativá-lo no Terraform quando o SKU é `free`. Então ligamos via `az` (igual ao data-plane do Cosmos):
-
-```bash
-SEARCH_NAME=$(cd ~/aie-cloud/aulas/02-storage-bancos/lab/terraform && terraform output -raw search_service_name)
-RG=$(cd ~/aie-cloud/aulas/02-storage-bancos/lab/terraform && terraform output -raw resource_group_name)
-
-az search service update --name "$SEARCH_NAME" --resource-group "$RG" --semantic-search free
-```
-
-> Sem este passo, a **busca keyword e por filtro funcionam**, mas a **busca semântica** falha com `Semantic search is not enabled for this service`.
-
-#### Passo 3 — Rodar o script de indexação
+#### Passo 2 — Rodar o script de indexação
 
 [indexar_produtos.py](scripts/indexar_produtos.py) cria o índice `produtos-index` com **analyzer em português** e configuração de semantic ranking, depois indexa os 20 produtos.
 
@@ -300,7 +281,7 @@ O script já demonstra 3 tipos de busca:
 - **Semantic:** `algo para trabalhar em pé`
 - **Filtro + ordenação:** `categoria = moveis` ordenado por preço
 
-#### Passo 4 — Validar no portal
+#### Passo 3 — Validar no portal
 
 1. Portal → `srch-qc-xxxxxx` → **Search Explorer**
 2. Testar query: `cadeira ergonomica` — observar resultados
@@ -380,9 +361,9 @@ Esses recursos serão consumidos por:
 | Python pyodbc: "Can't open lib 'ODBC Driver 18 for SQL Server'" | Cloud Shell pode ter v17 em vez de v18 | Mudar `driver = "{ODBC Driver 17 for SQL Server}"` no script |
 | pyodbc: "Invalid value specified for connection string attribute 'Encrypt'" | Connection string com `Encrypt=true`/`false` (sintaxe .NET); o ODBC exige `yes`/`no` | Já corrigido no `keyvault.tf` (`Encrypt=yes;TrustServerCertificate=no`). Se o segredo foi criado antes do fix, rode `terraform apply` de novo para atualizá-lo |
 | Key Vault: "Forbidden — the user does not have ... action" | RBAC ainda não propagou | `sleep 60` e tentar de novo |
-| Cosmos: "Request is unauthorized" | Falta role data plane | Rodar o `az cosmosdb sql role assignment create...` do Passo 2 da Parte A |
-| AI Search: `Operation returned an invalid status 'Forbidden'` ao indexar | Serviço aceitava só API key no data-plane (token AAD recusado) | Já corrigido no `search.tf` (`authentication_failure_mode`). Em serviço criado antes do fix: `terraform apply` de novo, ou `az search service update --name <svc> -g <rg> --auth-options aadOrApiKey --aad-auth-failure-mode http403` |
-| AI Search: `Semantic search is not enabled for this service` | Semantic ranker não habilitado no serviço | Rodar o `az search service update ... --semantic-search free` do Passo 2 da Parte B |
+| Cosmos: "Request is unauthorized" / `Forbidden` | Role data-plane ainda propagando (já é criada pelo Terraform em `cosmos.tf`) | Aguardar ~1 min e rodar de novo. Conferir: `az cosmosdb sql role assignment list --account-name <cosmos> -g <rg> -o table` |
+| AI Search: `Operation returned an invalid status 'Forbidden'` ao indexar | Serviço aceitava só API key no data-plane (token AAD recusado) | Já resolvido no `search.tf` (`authentication_failure_mode`). Em serviço criado antes do fix: `terraform apply` de novo |
+| AI Search: `Semantic search is not enabled for this service` | Semantic ranker não habilitado | Já resolvido via `azapi_update_resource.search_semantic` em `search.tf`. Em serviço antigo: `terraform apply` de novo (ou `az search service update --name <svc> -g <rg> --semantic-search free`) |
 | `terraform destroy` falha em Key Vault | Purge protection ou soft-delete | Confirmar `purge_protection_enabled = false` no `keyvault.tf` (já está) |
 | `AuthorizationPermissionMismatch` no upload Blob | Sem role data plane no Storage | Conceder `Storage Blob Data Contributor` (ver Passo 2 da L₁) |
 

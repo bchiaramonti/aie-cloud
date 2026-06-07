@@ -27,6 +27,18 @@ resource "azurerm_cosmosdb_account" "qc" {
   tags = local.tags
 }
 
+# Role data-plane do Cosmos (Built-in Data Contributor, id ...0002) concedida
+# via Terraform ao usuário que roda o apply. Sem ela, o DefaultAzureCredential
+# dos scripts recebe Forbidden ao ler/gravar documentos. Antes era um passo
+# manual via `az` — em IaC fica determinístico e sem race de propagação.
+resource "azurerm_cosmosdb_sql_role_assignment" "qc_data" {
+  resource_group_name = azurerm_resource_group.rg.name
+  account_name        = azurerm_cosmosdb_account.qc.name
+  role_definition_id  = "${azurerm_cosmosdb_account.qc.id}/sqlRoleDefinitions/00000000-0000-0000-0000-000000000002"
+  principal_id        = data.azurerm_client_config.current.object_id
+  scope               = azurerm_cosmosdb_account.qc.id
+}
+
 # Database
 resource "azurerm_cosmosdb_sql_database" "qc" {
   name                = "qc-db"

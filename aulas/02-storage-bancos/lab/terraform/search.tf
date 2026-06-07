@@ -38,3 +38,17 @@ resource "azurerm_role_assignment" "search_index_data" {
   role_definition_name = "Search Index Data Contributor"
   principal_id         = data.azurerm_client_config.current.object_id
 }
+
+# Habilita o semantic ranker (plano free). Feito via azapi porque o provider
+# azurerm 3.x recusa semantic_search_sku quando sku="free", apesar de o Azure
+# suportar. Sem isso, buscas com query_type="semantic" falham com
+# "Semantic search is not enabled for this service".
+resource "azapi_update_resource" "search_semantic" {
+  type        = "Microsoft.Search/searchServices@2023-11-01"
+  resource_id = azurerm_search_service.qc.id
+  body = jsonencode({
+    properties = {
+      semanticSearch = "free"
+    }
+  })
+}

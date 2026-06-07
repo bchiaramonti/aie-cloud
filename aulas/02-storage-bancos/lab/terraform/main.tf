@@ -16,6 +16,12 @@ terraform {
       source  = "hashicorp/time"
       version = "~> 0.12"
     }
+    # azapi: usado para habilitar o semantic ranker do AI Search, que o
+    # provider azurerm 3.x não permite configurar quando o SKU é "free".
+    azapi = {
+      source  = "Azure/azapi"
+      version = "~> 1.15"
+    }
   }
 }
 
@@ -26,6 +32,8 @@ provider "azurerm" {
     }
   }
 }
+
+provider "azapi" {}
 
 resource "random_string" "sufixo" {
   length  = 6
